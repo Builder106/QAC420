@@ -10,6 +10,7 @@ except ImportError:
     HAS_PLAYWRIGHT = False
 
 from ..config import MIN_YEAR, MAX_YEAR
+from .house_pdf_parser import parse_house_pdf
 
 HOUSE_BASE = "https://disclosures-clerk.house.gov"
 HOUSE_SEARCH_URL = "https://disclosures-clerk.house.gov/FinancialDisclosure#Search"
@@ -108,31 +109,75 @@ class HouseOfficialScraper:
         table = self._page.query_selector("table.library-table.dataTable")
         if not table:
             return []
-        rows = table.query_selector_all("tbody tr")
+            
+        # Unpaginate completely by commanding DataTables to list everything at once
+        self._page.evaluate("""() => {
+            let dt = $(".library-table.dataTable").DataTable();
+            if (dt) {
+                dt.page.len(-1).draw();
+            }
+        }""")
+        self._page.wait_for_timeout(3000)
+        
+        # Extract row metadata efficiently via Javascript
+        row_data = self._page.evaluate("""(year) => {
+            let output = [];
+            document.querySelectorAll("table.library-table.dataTable tbody tr").forEach(tr => {
+                let nameCell = tr.querySelector('td[data-label="Name"]');
+                let officeCell = tr.querySelector('td[data-label="Office"]');
+                let yearCell = tr.querySelector('td[data-label="Filing Year"]');
+                let filingCell = tr.querySelector('td[data-label="Filing"]');
+                
+                if (!nameCell) return;
+                
+                let link = nameCell.querySelector("a");
+                let href = link ? link.getAttribute("href") : "";
+                
+                output.push({
+                    "name": nameCell.innerText.trim(),
+                    "office": officeCell ? officeCell.innerText.trim() : "",
+                    "year": yearCell ? yearCell.innerText.trim() : year,
+                    "filing_type": filingCell ? filingCell.innerText.trim() : "",
+                    "href": href
+                });
+            });
+            return output;
+        }""", year)
+        
         results = []
-        for row in rows:
-            name_cell = row.query_selector('td[data-label="Name"]')
-            office_cell = row.query_selector('td[data-label="Office"]')
-            year_cell = row.query_selector('td[data-label="Filing Year"]')
-            filing_cell = row.query_selector('td[data-label="Filing"]')
-            if not name_cell:
-                continue
-            link = name_cell.query_selector("a")
-            if not link:
-                continue
-            href = link.get_attribute("href")
+        for i, r in enumerate(row_data):
+            name = r.get("name", "")
+            office = r.get("office", "")
+            yr = r.get("year", year)
+            filing_type = r.get("filing_type", "").lower()
+            href = r.get("href", "")
+            
             if not href:
                 continue
+                
             if href.startswith("/"):
                 pdf_url = f"{HOUSE_BASE}{href}"
             else:
                 pdf_url = f"{HOUSE_BASE}/{href}"
-            name = name_cell.inner_text().strip()
-            office = office_cell.inner_text().strip() if office_cell else ""
-            yr = year_cell.inner_text().strip() if year_cell else year
-            filing_type = filing_cell.inner_text().strip().lower() if filing_cell else ""
+                
             if "ptr" in filing_type or "transaction" in filing_type or "periodic" in filing_type:
-                results.append(_normalize_house_disclosure_row(name, office, yr, filing_type, pdf_url))
+                print(f"  [{year}] Downloading and parsing PTR PDF {i+1}/{len(row_data)}: {name}")
+                base_row = _normalize_house_disclosure_row(name, office, yr, filing_type, pdf_url)
+                
+                # Fetch deeper PDF contents
+                try:
+                    pdf_trades = parse_house_pdf(pdf_url)
+                    if pdf_trades:
+                        for trade in pdf_trades:
+                            rich_row = base_row.copy()
+                            rich_row.update(trade)
+                            rich_row["comment"] = f"Parsed from PDF. Type: {filing_type}"
+                            results.append(rich_row)
+                    else:
+                        results.append(base_row)
+                except Exception as e:
+                    results.append(base_row)
+                    
         return results
 
     def scrape(
@@ -146,10 +191,13 @@ class HouseOfficialScraper:
         self._ensure_search_page()
         all_rows = []
         for year in range(start_year, end_year + 1):
+            print(f"\\n--- Starting query for House disclosures in {year} ---")
             try:
                 rows = self._search_year(str(year), last_name)
+                print(f"Total parsed House transactions from {year}: {len(rows)}")
                 all_rows.extend(rows)
-            except Exception:
+            except Exception as e:
+                print(f"Failed to parse {year}: {e}")
                 continue
         if not all_rows:
             return pd.DataFrame()

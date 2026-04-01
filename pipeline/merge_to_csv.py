@@ -35,6 +35,9 @@ def clean_dataframe(df):
 
     df = df.copy()
 
+    # Convert completely empty strings or whitespace-only strings to genuine NaNs
+    df.replace(r"^\s*$", pd.NA, regex=True, inplace=True)
+
     def _normalize_string(value):
         if pd.isna(value):
             return None

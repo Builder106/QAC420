@@ -46,7 +46,7 @@ def _parse_amount_range(value):
 
 
 def _normalize_house_row(r):
-    trans_date = r.get("transaction_date") or r.get("disclosure_date")
+    trans_date = r.get("transaction_date") or r.get("disclosure_date") or r.get("date_received")
     name = r.get("representative") or r.get("legislator_name") or r.get("name") or ""
     if not name and (r.get("first_name") or r.get("last_name")):
         name = f"{r.get('first_name', '')} {r.get('last_name', '')}".strip()

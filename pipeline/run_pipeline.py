@@ -55,6 +55,8 @@ def run(
                 senate_df = scraper.scrape()
             out_s = DATA_DIR / "senate_trades.csv"
             if senate_df is not None and not senate_df.empty:
+                from .merge_to_csv import clean_dataframe
+                senate_df = clean_dataframe(senate_df)
                 senate_df.to_csv(out_s, index=False)
                 print(f"Senate: {len(senate_df)} trades -> {out_s}")
         if not senate_only:
@@ -63,6 +65,8 @@ def run(
                 house_df = scraper.scrape()
             out_h = DATA_DIR / "house_trades.csv"
             if house_df is not None and not house_df.empty:
+                from .merge_to_csv import clean_dataframe
+                house_df = clean_dataframe(house_df)
                 house_df.to_csv(out_h, index=False)
                 print(f"House: {len(house_df)} disclosure records -> {out_h}")
         if not senate_only and not house_only:
