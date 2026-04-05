@@ -1,0 +1,30 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{setspace}
+
+\title{Midway Reflection: U.S. Congress Stock Trade Analysis}
+\author{Yinka Vaughan \\ QAC 420: Data for Good}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\doublespacing
+
+\section*{Introduction and Project Overview}
+When I first started this project, my main goal was to figure out if members of Congress are actually better at trading stocks than the rest of us. We often hear about politicians making suspiciously well-timed trades, so I wanted to see if the data backed that up. By scraping their financial disclosures and comparing their returns to the S\&P 500, my hope is to shed some light on political accountability. At this halfway point, I've successfully built the main data pipeline and started running my initial exploratory analysis, which has already given me some fascinating glimpses into how they time the market.
+
+\section*{Technical Growth and Challenges}
+On the technical side, this project has pushed me way out of my comfort zone. Just getting the data wasn't as easy as downloading a basic CSV. I had to learn how to use \texttt{pdfplumber} to run Optical Character Recognition (OCR) and pull structured tables out of messy, inconsistent government PDFs. The House website was particularly tricky—it uses a DataTables pagination system that only let my scraper see 50 records at a time. To get around this, I had to figure out how to inject JavaScript (\texttt{dt.page.len(-1).draw()}) using Playwright to force the page to load all the rows at once. After that, cleaning the data with regex in Pandas so I could properly merge 16,000+ trades into one clean file felt like a huge victory.
+
+\section*{Ethical Considerations in Data Acquisition}
+In the feedback for my Statement of Purpose, a reviewer asked a really important question about the ethics of scraping these sites and whether I'd be bypassing firewalls. That made me pause and carefully consider my approach. I realized it's crucial to make an ethical distinction here: I'm not hacking into private databases or bypassing security protocols like CAPTCHAs. All of this data is completely public and legally required to be accessible to citizens. My code simply automates the tedious process of reading thousands of pages—something a regular person couldn't realistically do by hand. In a way, the scraping itself is an exercise in "Data for Accountability."
+
+\section*{Broader Societal Implications (Data for Social Good)}
+Seeing the first real results from my data was a pretty surreal moment. I ran a 1-sample t-test on the purchase data, and the results actually showed a statistically significant positive edge over the market within a 90-day window ($p < 0.05$). Translating those numbers into the real world is where the "Data for Good" aspect really hits home for me. If our elected officials are consistently beating the market—potentially by leveraging non-public information to buy before a boom or sell before a crash—it seriously damages public trust. It makes people feel like the game is rigged and hurts the perceived fairness of our democracy.
+
+\section*{Looking Forward}
+As I look toward the final presentation, my biggest goal is to shift from just doing data engineering to actually telling a story. I want to highlight the "anomalies"—the legislators who had the absolute highest returns or best-timed sales—to show the real faces behind these numbers. I also need to make sure I clearly define some of my more complex financial terms, like Jensen's Alpha and Information Advantage Decay, so that anyone in the audience can follow along. Ultimately, I want the final deliverable to evaluate not just what the data says, but what it actually means for us as voters and citizens.
+
+\end{document}
