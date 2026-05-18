@@ -1,7 +1,9 @@
 <picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="assets/banner-dark.svg"  type="image/svg+xml">
+  <source media="(prefers-color-scheme: light)" srcset="assets/banner-light.svg" type="image/svg+xml">
   <source media="(prefers-color-scheme: dark)"  srcset="assets/banner-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="assets/banner-light.png">
-  <img alt="CapitolAlpha — A statistically significant edge in 16,203 disclosed Congressional trades. QAC 420, Wesleyan." src="assets/banner-dark.png">
+  <img alt="CapitolAlpha — A statistically significant edge in 16,203 disclosed Congressional trades. QAC 420, Wesleyan." src="assets/banner-dark.svg">
 </picture>
 
 [![CI](https://github.com/Builder106/CapitolAlpha/actions/workflows/ci.yml/badge.svg)](https://github.com/Builder106/CapitolAlpha/actions/workflows/ci.yml)
