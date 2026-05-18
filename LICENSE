@@ -19,8 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-The underlying Periodic Transaction Report filings scraped by this pipeline
-are public records published by the U.S. Senate Office of Public Records
-(efdsearch.senate.gov) and the Office of the Clerk of the U.S. House
-(disclosures-clerk.house.gov), and are in the public domain.
