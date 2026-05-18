@@ -4,7 +4,7 @@
   <img alt="CapitolAlpha — A statistically significant edge in 16,203 disclosed Congressional trades. QAC 420, Wesleyan." src="assets/banner-dark.png">
 </picture>
 
-[![CI](https://github.com/Builder106/QAC420/actions/workflows/ci.yml/badge.svg)](https://github.com/Builder106/QAC420/actions/workflows/ci.yml)
+[![CI](https://github.com/Builder106/CapitolAlpha/actions/workflows/ci.yml/badge.svg)](https://github.com/Builder106/CapitolAlpha/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![Playwright](https://img.shields.io/badge/Playwright-scraping-2EAD33.svg?logo=playwright&logoColor=white)](https://playwright.dev/python/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
